@@ -1,0 +1,24 @@
+{
+  "name": "after-school-webservice",
+  "version": "1.0.0",
+  "description": "Backend webservice for After School Course Selector",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MrRox1337/After-School-Webservice.git"
+  },
+  "author": "Aman Mishra",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MrRox1337/After-School-Webservice/issues"
+  },
+  "homepage": "https://github.com/MrRox1337/After-School-Webservice#readme",
+  "dependencies": {
+    "express": "^4.21.1",
+    "mongodb": "^3.6.3"
+  }
+}
