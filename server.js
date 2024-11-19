@@ -1,10 +1,11 @@
 // Import dependencies modules:
 const express = require("express");
+const app = express();
+const ObjectID = require("mongodb").ObjectID;
+const MongoClient = require("mongodb").MongoClient;
 // cost bodyParser = require('body-parser')
 
 // Create an Express.js instance:
-const app = express();
-
 function config(req, res, next) {
 	res.setHeader("Access-Control-Allow-Origin", "*");
 	res.setHeader("Access-Control-Allow-Credentials", "true");
@@ -23,8 +24,6 @@ app.set("port", 3000);
 app.use(config);
 
 // Connect to MongoDB
-const MongoClient = require("mongodb").MongoClient;
-
 let db;
 MongoClient.connect("mongodb+srv://root:root@cluster0.nkykp1g.mongodb.net/", (err, client) => {
 	db = client.db("remedialSelect");
@@ -53,6 +52,35 @@ function addObject(req, res, next) {
 	});
 }
 
+function getOneObject(req, res, next) {
+	req.collection.findOne({ _id: new ObjectID(req.params.id) }, (e, result) => {
+		if (e) return next(e);
+		res.send(result);
+	});
+}
+
+function updateObject(req, res, next) {
+	req.collection.update(
+		{ _id: new ObjectID(req.params.id) },
+		{ $set: req.body },
+		// "safe" is used to wait for the process to complete before executing mongodb code
+		// "multi" false is to ensure only one document is updated.
+		{ safe: true, multi: false },
+		// When 1 document is updated, return success, else error
+		(e, result) => {
+			if (e) return next(e);
+			res.send(result.result.n === 1 ? { msg: "success" } : { msg: "error" });
+		}
+	);
+}
+
+function deleteObject(req, res, next) {
+	req.collection.deleteOne({ _id: ObjectID(req.params.id) }, (e, result) => {
+		if (e) return next(e);
+		res.send(result.result.n === 1 ? { msg: "success" } : { msg: "error" });
+	});
+}
+
 // Display a message for root path to show that API is working
 app.get("/", root);
 
@@ -62,9 +90,19 @@ app.param("collectionName", setCollectionName);
 // Retrieve all the objects from a collection
 app.get("/collection/:collectionName", retrieveObjects);
 
-// Insert document into collection
+// Insert an object into collection
 app.post("/collection/:collectionName", addObject);
 
-app.listen(3000, () => {
-	console.log("Express.js server running at localhost:3000");
+// Get one document from collection
+app.get("/collection/:collectionName/:id", getOneObject);
+
+// Update existing document inside a collection
+app.put("/collection/:collectionName/:id", updateObject);
+
+// Delete a document from the collection
+app.delete("/collection/:collectionName/:id", deleteObject);
+
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+	console.log("Express.js server running at localhost:" + port);
 });
