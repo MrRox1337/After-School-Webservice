@@ -25,8 +25,8 @@ app.use(config);
 
 // Connect to MongoDB
 let db;
-MongoClient.connect("mongodb+srv://root:toor@cluster0.nkykp1g.mongodb.net/", (err, client) => {
-	db = client.db("remedialSelect");
+MongoClient.connect(process.env.CONNECTION_STRING, (err, client) => {
+	db = client.db(process.env.DATABASE);
 });
 
 function root(req, res, next) {
