@@ -85,6 +85,26 @@ function deleteObject(req, res, next) {
 	});
 }
 
+function searchObject(req, res, next) {
+	const query = req.query.q;
+	const searchRegex = new RegExp(query, "i"); // Case-insensitive regex
+
+	// Search in multiple fields: subject, spaces, location, and price
+	req.collection
+		.find({
+			$or: [
+				{ subject: searchRegex },
+				{ location: searchRegex },
+				{ price: { $regex: searchRegex } },
+				{ spaces: { $regex: searchRegex } },
+			],
+		})
+		.toArray((e, results) => {
+			if (e) return next(e);
+			res.send(results);
+		});
+}
+
 // API Routes
 
 // Display a message for root path to show that API is working
@@ -112,31 +132,7 @@ app.delete("/collection/:collectionName/:id", deleteObject);
 app.use("/static", express.static(imagePath));
 
 // Search a collection and return relevant documents
-app.get("/search/subjects", (req, res, next) => {
-	const query = req.query.q || "";
-
-	// If the query is empty, return the entire collection
-	if (!query) {
-		retrieveObjects();
-	} else {
-		const searchRegex = new RegExp(query, "i"); // Case-insensitive regex
-
-		// Search in multiple fields: subject, spaces, location, and price
-		req.collection
-			.find({
-				$or: [
-					{ subject: searchRegex },
-					{ location: searchRegex },
-					{ price: { $regex: searchRegex } },
-					{ spaces: { $regex: searchRegex } },
-				],
-			})
-			.toArray((e, results) => {
-				if (e) return next(e);
-				res.send(results);
-			});
-	}
-});
+app.get("/search/subjects", searchObject);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
