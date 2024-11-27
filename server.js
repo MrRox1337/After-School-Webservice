@@ -92,12 +92,7 @@ function searchObject(req, res, next) {
 	// Search in multiple fields: subject, spaces, location, and price
 	req.collection
 		.find({
-			$or: [
-				{ subject: searchRegex },
-				{ location: searchRegex },
-				{ price: { $regex: searchRegex } },
-				{ spaces: { $regex: searchRegex } },
-			],
+			$or: [{ subject: searchRegex }, { location: searchRegex }, { price: searchRegex }, { spaces: searchRegex }],
 		})
 		.toArray((e, results) => {
 			if (e) return next(e);
