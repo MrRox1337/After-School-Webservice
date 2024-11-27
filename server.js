@@ -87,7 +87,6 @@ function deleteObject(req, res, next) {
 
 function searchObject(req, res, next) {
 	const query = req.query.q;
-	console.log(query);
 	const searchRegex = new RegExp(query, "i"); // Case-insensitive regex
 
 	// Search in multiple fields: subject, spaces, location, and price
@@ -102,6 +101,7 @@ function searchObject(req, res, next) {
 		})
 		.toArray((e, results) => {
 			if (e) return next(e);
+			console.log(results);
 			res.send(results);
 		});
 }
