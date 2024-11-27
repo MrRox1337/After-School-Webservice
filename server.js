@@ -87,7 +87,7 @@ function deleteObject(req, res, next) {
 
 function searchObject(req, res, next) {
 	const query = req.query.q;
-	const searchRegex = new RegExp(query, "i"); // Case-insensitive regex
+	const searchRegex = query; //new RegExp(query, "i"); // Case-insensitive regex
 
 	// Search in multiple fields: subject, spaces, location, and price
 	req.collection
