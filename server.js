@@ -122,7 +122,7 @@ app.put("/collection/:collectionName/:id", updateObject);
 app.delete("/collection/:collectionName/:id", deleteObject);
 
 // Search a collection and return relevant documents
-app.get("/search/subjects", searchObject);
+app.get("/search/:collectionName", searchObject);
 
 // Serve static content from back-end server
 app.use("/static", express.static(imagePath));
