@@ -86,17 +86,13 @@ function deleteObject(req, res, next) {
 }
 
 function searchObject(req, res, next) {
-	const query = req.query.q;
-	const searchRegex = query; //new RegExp(query, "i"); // Case-insensitive regex
-
+	const searchQuery = req.query.q || "";
 	// Search in multiple fields: subject, spaces, location, and price
 	req.collection
-		.find({
-			$or: [{ subject: searchRegex }, { location: searchRegex }, { price: searchRegex }, { spaces: searchRegex }],
-		})
+		.find(searchQuery ? { $text: { $search: searchQuery } } : {})
 		.toArray((e, results) => {
 			if (e) return next(e);
-			console.log(results);
+			console.log("results", results);
 			res.send(results);
 		});
 }
@@ -124,11 +120,11 @@ app.put("/collection/:collectionName/:id", updateObject);
 // Delete a document from the collection
 app.delete("/collection/:collectionName/:id", deleteObject);
 
-// Serve static content from back-end server
-app.use("/static", express.static(imagePath));
-
 // Search a collection and return relevant documents
 app.get("/search/subjects", searchObject);
+
+// Serve static content from back-end server
+app.use("/static", express.static(imagePath));
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
