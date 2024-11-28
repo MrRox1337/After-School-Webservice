@@ -86,7 +86,7 @@ function deleteObject(req, res, next) {
 }
 
 function searchObject(req, res, next) {
-	const searchQuery = req.query || "";
+	const searchQuery = req.query.query || "";
 	console.log("query: ", searchQuery);
 	// Search in multiple fields: subject, spaces, location, and price
 	req.collection
