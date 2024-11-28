@@ -88,12 +88,20 @@ function deleteObject(req, res, next) {
 function searchObject(req, res, next) {
 	const searchQuery = req.query.query || "";
 	console.log("query: ", searchQuery);
+	const searchRegex = new RegExp(searchQuery, "i"); // Case-insensitive regex
+
 	// Search in multiple fields: subject, spaces, location, and price
 	req.collection
-		.find(searchQuery ? { $text: { $search: searchQuery } } : {})
+		.find({
+			$or: [
+				{ subject: searchRegex },
+				{ location: searchRegex },
+				{ price: { $regex: searchRegex } },
+				{ spaces: { $regex: searchRegex } },
+			],
+		})
 		.toArray((e, results) => {
 			if (e) return next(e);
-			console.log("results", results);
 			res.send(results);
 		});
 }
