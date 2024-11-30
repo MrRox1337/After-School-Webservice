@@ -34,15 +34,18 @@ MongoClient.connect(process.env.CONNECTION_STRING, (err, client) => {
 var imagePath = path.resolve(__dirname, "static");
 
 function root(req, res, next) {
+	console.log("Accessed root endpoint");
 	res.send("Select a collection, e.g., /collection/messages");
 }
 
 function setCollectionName(req, res, next, collectionName) {
+	console.log(`Collection set to: ${collectionName}`);
 	req.collection = db.collection(collectionName);
 	return next();
 }
 
 function retrieveObjects(req, res, next) {
+	console.log(`Retrieving objects from collection: ${req.params.collectionName}`);
 	req.collection.find({}).toArray((e, results) => {
 		if (e) return next(e);
 		res.send(results);
@@ -50,13 +53,18 @@ function retrieveObjects(req, res, next) {
 }
 
 function addObject(req, res, next) {
+	console.log(`Adding an object to collection: ${req.params.collectionName}`);
 	req.collection.insert(req.body, (e, results) => {
 		if (e) return next(e);
+		console.log("Object added:", results.ops);
 		res.send(results.ops);
 	});
 }
 
 function getOneObject(req, res, next) {
+	console.log(
+		`Retrieving a single object from collection: ${req.params.collectionName} with ID: ${req.params.id}`
+	);
 	req.collection.findOne({ _id: new ObjectID(req.params.id) }, (e, result) => {
 		if (e) return next(e);
 		res.send(result);
@@ -64,6 +72,9 @@ function getOneObject(req, res, next) {
 }
 
 function updateObject(req, res, next) {
+	console.log(
+		`Updating object in collection: ${req.params.collectionName} with ID: ${req.params.id}`
+	);
 	req.collection.update(
 		{ _id: new ObjectID(req.params.id) },
 		{ $set: req.body },
@@ -73,22 +84,31 @@ function updateObject(req, res, next) {
 		// When 1 document is updated, return success, else error
 		(e, result) => {
 			if (e) return next(e);
+			console.log(
+				result.result.n === 1 ? "Object updated successfully" : "Object update failed"
+			);
 			res.send(result.result.n === 1 ? { msg: "success" } : { msg: "error" });
 		}
 	);
 }
 
 function deleteObject(req, res, next) {
+	console.log(
+		`Deleting object from collection: ${req.params.collectionName} with ID: ${req.params.id}`
+	);
 	req.collection.deleteOne({ _id: ObjectID(req.params.id) }, (e, result) => {
 		if (e) return next(e);
+		console.log(
+			result.result.n === 1 ? "Object deleted successfully" : "Object deletion failed"
+		);
 		res.send(result.result.n === 1 ? { msg: "success" } : { msg: "error" });
 	});
 }
 
 function searchObject(req, res, next) {
 	const searchQuery = req.query.query || "";
-	console.log("query: ", searchQuery);
-	const searchRegex = new RegExp(searchQuery, "i"); // Case-insensitive regex
+	console.log(`Searching in collection: ${req.params.collectionName} with query: ${searchQuery}`);
+	const searchRegex = new RegExp(searchQuery, "i");
 
 	// Search in multiple fields: subject, spaces, location, and price
 	req.collection
@@ -102,6 +122,7 @@ function searchObject(req, res, next) {
 		})
 		.toArray((e, results) => {
 			if (e) return next(e);
+			console.log(`Search results: ${results.length} documents found`);
 			res.send(results);
 		});
 }
