@@ -44,7 +44,7 @@ MongoClient.connect(process.env.CONNECTION_STRING, (err, client) => {
 var imagePath = path.resolve(__dirname, "static");
 /**
  * `imagePath` holds the resolved absolute path to the "static" directory.
- * This is used to serve static content (e.g., images, files) via Express.js.
+ * This is used to serve lesson images via Express.js.
  */
 
 function root(req, res, next) {
@@ -104,23 +104,6 @@ function addObject(req, res, next) {
 	});
 }
 
-function getOneObject(req, res, next) {
-	/**
-	 * Retrieves a single document by its ID from the specified MongoDB collection.
-	 *
-	 * @param req - HTTP request object. Contains the document ID in `req.params.id`.
-	 * @param res - HTTP response object. Sends back the document, or an empty response if not found.
-	 * @param next - Function to handle errors if they occur.
-	 */
-	console.log(
-		`Retrieving a single object from collection: ${req.params.collectionName} with ID: ${req.params.id}`
-	);
-	req.collection.findOne({ _id: new ObjectID(req.params.id) }, (e, result) => {
-		if (e) return next(e); // Handles database errors.
-		res.send(result); // Sends back the found document.
-	});
-}
-
 function updateObject(req, res, next) {
 	/**
 	 * Updates an existing document by its ID in the specified MongoDB collection.
@@ -144,26 +127,6 @@ function updateObject(req, res, next) {
 			res.send(result.result.n === 1 ? { msg: "success" } : { msg: "error" });
 		}
 	);
-}
-
-function deleteObject(req, res, next) {
-	/**
-	 * Deletes a document by its ID from the specified MongoDB collection.
-	 *
-	 * @param req - HTTP request object. Contains the document ID in `req.params.id`.
-	 * @param res - HTTP response object. Sends a success or error message.
-	 * @param next - Function to handle errors if they occur.
-	 */
-	console.log(
-		`Deleting object from collection: ${req.params.collectionName} with ID: ${req.params.id}`
-	);
-	req.collection.deleteOne({ _id: ObjectID(req.params.id) }, (e, result) => {
-		if (e) return next(e); // Handles database errors.
-		console.log(
-			result.result.n === 1 ? "Object deleted successfully" : "Object deletion failed"
-		);
-		res.send(result.result.n === 1 ? { msg: "success" } : { msg: "error" });
-	});
 }
 
 function searchObject(req, res, next) {
@@ -205,11 +168,7 @@ app.get("/collection/:collectionName", retrieveObjects); // Retrieves all docume
 
 app.post("/collection/:collectionName", addObject); // Adds a new document to a collection.
 
-app.get("/collection/:collectionName/:id", getOneObject); // Retrieves a single document by ID.
-
 app.put("/collection/:collectionName/:id", updateObject); // Updates a document by ID.
-
-app.delete("/collection/:collectionName/:id", deleteObject); // Deletes a document by ID.
 
 app.get("/search/:collectionName", searchObject); // Searches a collection based on a query string.
 
