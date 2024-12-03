@@ -1,9 +1,11 @@
-// Import dependencies modules:
+// ----------- Import dependencies modules: -----------
 const express = require("express");
 const app = express();
 const ObjectID = require("mongodb").ObjectID;
 const MongoClient = require("mongodb").MongoClient;
 const path = require("path");
+
+// ----------- API Middleware -----------
 
 // Create an Express.js instance:
 function config(req, res, next) {
@@ -21,7 +23,7 @@ function config(req, res, next) {
 
 	next();
 }
-// Logger Middleware
+// Logger Middleware:
 function logger(req, res, next) {
 	/**
 	 * Middleware function to print the time, url, and method
@@ -57,7 +59,7 @@ MongoClient.connect(process.env.CONNECTION_STRING, (err, client) => {
 	db = client.db(process.env.DATABASE);
 });
 
-// Route actions
+// ----------- Route actions -----------
 
 // Absolute path for serving static content
 var imagePath = path.resolve(__dirname, "static");
@@ -177,7 +179,7 @@ function searchObject(req, res, next) {
 		});
 }
 
-// API Routes
+// ----------- API Routes -----------
 
 app.get("/", root); // Handles the root route.
 
@@ -193,7 +195,8 @@ app.get("/search/:collectionName", searchObject); // Searches a collection based
 
 app.use("/static", express.static(imagePath)); // Serves static files from the "static" directory.
 
-// Start the server
+// ----------- Start the server -----------
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
 	console.log("Express.js server running at localhost:" + port);
