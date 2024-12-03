@@ -21,11 +21,30 @@ function config(req, res, next) {
 
 	next();
 }
+// Logger Middleware
+function logger(req, res, next) {
+	/**
+	 * Middleware function to print the time, url, and method
+	 * of the called route from the front-end.
+	 */
+	const method = req.method;
+	const url = req.url;
+	const timestamp = new Date();
+
+	console.log(`[${timestamp}] ${method} request to ${url}`);
+
+	res.on("finish", () => {
+		console.log(`[${timestamp}] Response status: ${res.statusCode}`);
+	});
+
+	next();
+}
 
 // Config express
 app.use(express.json()); // Middleware to parse incoming JSON requests.
 app.set("port", 3000); // Sets the default port for the application.
 app.use(config); // Applies the CORS middleware globally.
+app.use(logger); // Use the logger middleware
 
 // Connect to MongoDB
 let db;
