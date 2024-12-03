@@ -35,10 +35,6 @@ function logger(req, res, next) {
 
 	console.log(`[${timestamp}] ${method} request to ${url}`);
 
-	res.on("finish", () => {
-		console.log(`[${timestamp}] Response status: ${res.statusCode}`);
-	});
-
 	next();
 }
 
