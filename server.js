@@ -42,7 +42,7 @@ function config(req, res, next) {
 app.use(express.json()); // Middleware to parse incoming JSON requests.
 app.set("port", 3000); // Sets the default port for the application.
 app.use(config); // Applies the CORS middleware globally.
-app.use(logger); // Use the logger middleware
+//app.use(logger); // Use the logger middleware
 
 // Connect to MongoDB
 let db;
